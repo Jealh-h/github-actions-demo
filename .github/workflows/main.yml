@@ -1,0 +1,17 @@
+name: Deploy Hosting
+
+on: push
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Add any build steps here. For example:
+      # - run: npm ci && npm run build
+      - uses: byteinspire/hosting-deployer-action@v1
+        with:
+          service-id: '${{ secrets.SERVICE_ID }}'
+          token: '${{ secrets.ACCESS_TOKEN }}'
+          # Or you can use file param to directly specify the ziped file path
+          directory: your-directory-path

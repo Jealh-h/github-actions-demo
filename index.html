@@ -4,12 +4,146 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ga-demo</title>
+    <title>todos</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container,
+      .title {
+        width: 500px;
+        margin: 0 auto;
+      }
+      .title {
+        text-align: center;
+        box-sizing: content-box;
+        padding: 20px 0;
+        font-size: 5rem;
+        font-weight: bolder;
+        color: blanchedalmond;
+      }
+      .input-box {
+        width: 500px;
+        height: 60px;
+        box-sizing: border-box;
+        background-color: red;
+        margin: 100px auto 0;
+        box-shadow: 0 0 20px 1px rgba(104, 104, 104, 0.5);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .input-box input {
+        padding: 0 10px;
+        box-sizing: border-box;
+        border: none;
+        width: 100%;
+        height: 100%;
+        font-size: 1.5em;
+      }
+      .input-box input:focus {
+        outline: #0094ff 5px;
+      }
+      .todo-list {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        max-height: 400px;
+      }
+      .todo-list li {
+        width: auto;
+        list-style: none;
+        height: 48px;
+        line-height: 48px;
+        border: 1px solid #d9d9d9;
+        background-color: #fff;
+        padding: 0 10px;
+        margin: 0 5px;
+        box-sizing: border-box;
+        position: relative;
+      }
+      .delete-button {
+        position: absolute;
+        right: 10px;
+        top: 0%;
+      }
+      .delete-button:hover {
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
-    <h1>ByteInspire Hosting GitHub Action....</h1>
+    <div class="container">
+      <div class="title">TODOs</div>
+      <div class="input-box">
+        <input id="input" type="text" />
+      </div>
+      <ul class="todo-list"></ul>
+    </div>
   </body>
   <script>
-    document.write("ByteInspire Hosting GitHub Action--use fork action.");
+    let input = document.querySelector("#input");
+    let todocontainer = document.querySelector(".todo-list");
+    let currentTodos = [];
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        if (e.target.value === "") {
+          alert("输入为空");
+        } else {
+          currentTodos.push({
+            title: e.target.value,
+          });
+          renderAddTodos({
+            title: e.target.value,
+          });
+          e.target.value = "";
+        }
+      }
+    });
+    input.addEventListener("keyup", function (e) {
+      //   模糊查找
+      let targetStr = e.target.value;
+      let reg = new RegExp("(" + targetStr + ")", "g");
+      let todos = todocontainer.querySelectorAll("li");
+      for (let item of todos) {
+        // 不匹配的消失
+        if (item.innerText.indexOf(targetStr) === -1) {
+          item.style.display = "none";
+        } else {
+          let oldstr = item.innerText.slice(0, item.innerText.length - 1);
+          //   叉叉按钮
+          let btn = item.children[item.children.length - 1];
+          //   替换匹配的字
+          let newStr = oldstr.replace(reg, '<font color="red">$1</font>');
+          item.innerHTML = newStr;
+          item.appendChild(btn);
+        }
+      }
+      if (targetStr == "") {
+        for (let item of todos) {
+          item.style.display = "block";
+        }
+      }
+    });
+    function renderAddTodos(item) {
+      let li = document.createElement("li");
+      let btnSpan = document.createElement("span");
+      li.innerText = item.title;
+      btnSpan.innerText = "X";
+      btnSpan.className = "delete-button";
+
+      li.appendChild(btnSpan);
+      todocontainer.appendChild(li);
+      btnSpan.onclick = function () {
+        todocontainer.removeChild(this.parentNode);
+        if (todocontainer.scrollHeight < 400) {
+          todocontainer.style.overflowY = "unset";
+        }
+      };
+      if (todocontainer.scrollHeight > 400) {
+        todocontainer.style.overflowY = "scroll";
+      }
+    }
   </script>
 </html>
